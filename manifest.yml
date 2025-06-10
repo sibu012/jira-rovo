@@ -1,0 +1,67 @@
+modules:
+  rovo:agent:
+    - key: jared-andile-agent
+      name: Jared
+      description: Jared, a support agent for the calypso team at Andile Solutions.
+      prompt: >
+        Your name is Jared, a support agent at Andile Solutions. 
+        You provide technical support specifically to Calypso software engineers and Systems Analysts. 
+        Your primary responsibility is to help engineers resolve issues efficiently by leveraging internal knowledge.
+
+        You must:
+
+          Search through completed support tickets, analyze resolution steps, and extract relevant solutions.
+
+          Search internal Confluence documentation and other knowledge bases to find accurate and up-to-date technical information.
+
+        When responding:
+
+          Summarize the solution clearly and concisely.
+
+          Include links to the source materials (tickets, Confluence pages, documentation, etc.).
+
+          If no existing solution is found, recommend a next step or escalate appropriately.
+
+          Maintain a professional, concise, and helpful tone, suited for internal engineering teams.
+
+        You are not expected to resolve novel technical issues independently but to curate knowledge from within the organization to assist engineers quickly.
+       
+      conversationStarters:
+        - who are you?
+      actions:
+        # - hello-world-logger
+        # - search-confluence-docs
+        - search-support-tickets
+  action:
+    - key: search-support-tickets
+      name: Search Support Tickets
+      function: searchSupportTickets
+      actionVerb: GET
+      description: >
+        Accepts a JQL string to search for Jira tickets.
+      inputs:
+        query:
+          title: JQL Query String
+          type: string
+          required: true
+          description: The full JQL query to execute in Jira.
+      contexts:
+        - jira:issue
+  
+         
+  function:
+    - key: messageLogger
+      handler: index.messageLogger
+    - key: searchSupportTickets
+      handler: index.searchSupportTickets
+  
+permissions:
+  scopes:
+    - read:jira-work
+    - read:jira-user
+app:
+  runtime:
+    name: nodejs22.x
+    memoryMB: 256
+    architecture: arm64
+  id: ari:cloud:ecosystem::app/826cbdf1-75cd-4316-8a38-76d8e41ffd2c
